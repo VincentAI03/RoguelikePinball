@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using UIButton = UnityEngine.UI.Button; // Alias per evitare conflitto con classe custom "Button"
 
 /// <summary>
 /// Controlla le animazioni e i pulsanti dello schermo “Level Complete”:
@@ -12,11 +13,16 @@ public class LevelCompleteScreen : MonoBehaviour
     private GameController gameController;
 
     // Pulsanti per acquistare buff (collegati in Inspector)
-    [SerializeField] private Button[] buyButtons;
+    [SerializeField] private UIButton[] buyButtons;
     // Pulsanti per selezionare la missione successiva
-    [SerializeField] private Button[] missionButtons;
+    [SerializeField] private UIButton[] missionButtons;
     // Animator che gestisce le transizioni di UI
     [SerializeField] private Animator animator;
+
+    // Tempi parametrizzabili (opzionali)
+    [SerializeField] private float buffToMissionDelay = 1f;
+    [SerializeField] private float missionToStartDelay = 2f;
+    [SerializeField] private float closeAnimationDelay = 1f;
 
     private void Awake()
     {
@@ -28,61 +34,70 @@ public class LevelCompleteScreen : MonoBehaviour
     {
         // Quando il pannello appare, abilita tutti i pulsanti
         foreach (var b in buyButtons)
-            b.interactable = true;
+            if (b != null) b.interactable = true;
 
         foreach (var m in missionButtons)
-            m.interactable = true;
+            if (m != null) m.interactable = true;
     }
 
     /// <summary>
     /// Chiamato da un pulsante “Buy Buff” con indice.
     /// Disabilita tutti i buyButtons, fa flip di quelli non scelti,
-    /// quindi passa alla selezione missione dopo 1s.
+    /// quindi passa alla selezione missione dopo un ritardo.
     /// </summary>
     public void BuffBought(int index)
     {
-        for (int i = 0; i < buyButtons.Length; i++)
-        {
-            buyButtons[i].interactable = false;
-            if (i != index)
-                buyButtons[i].GetComponent<Animator>().SetTrigger("flip");
-        }
+        DisableAndFlipOthers(buyButtons, index);
         StartCoroutine(ToMissionSelect());
     }
 
     /// <summary>
     /// Chiamato da un pulsante missione.
     /// Disabilita tutti missionButtons, fa flip di quelli non scelti,
-    /// quindi chiude il menu e avvia il livello dopo 2s.
+    /// quindi chiude il menu e avvia il livello dopo un ritardo.
     /// </summary>
     public void MissionSelected(int index)
     {
-        for (int i = 0; i < missionButtons.Length; i++)
-        {
-            missionButtons[i].interactable = false;
-            if (i != index)
-                missionButtons[i].GetComponent<Animator>().SetTrigger("flip");
-        }
+        DisableAndFlipOthers(missionButtons, index);
         StartCoroutine(CloseMenu());
     }
 
     /// <summary>
-    /// Attende 1 secondo, poi innesca animazione di transizione a Mission Select.
+    /// Disattiva tutti i pulsanti e fa animare solo quelli non selezionati.
+    /// </summary>
+    private void DisableAndFlipOthers(UIButton[] buttons, int selectedIndex)
+    {
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            if (buttons[i] == null) continue;
+            buttons[i].interactable = false;
+
+            if (i != selectedIndex)
+            {
+                Animator anim = buttons[i].GetComponent<Animator>();
+                if (anim != null)
+                    anim.SetTrigger("flip");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Attende un ritardo, poi innesca animazione di transizione a Mission Select.
     /// </summary>
     private IEnumerator ToMissionSelect()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(buffToMissionDelay);
         animator.SetTrigger("mission");
     }
 
     /// <summary>
-    /// Attende 2 secondi, innesca chiusura, poi avvia StartLevel().
+    /// Attende i ritardi previsti, innesca chiusura, poi avvia StartLevel().
     /// </summary>
     private IEnumerator CloseMenu()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(missionToStartDelay);
         animator.SetTrigger("close");
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(closeAnimationDelay);
         gameController.StartLevel();
     }
 }

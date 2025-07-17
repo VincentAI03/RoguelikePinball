@@ -9,8 +9,14 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class Flipper : MonoBehaviour
 {
-    private void Start()
+    private void Awake()
     {
+        // Ottieni le azioni dagli InputActionReference
+        if (flipperActionReference != null)
+            flipperAction = flipperActionReference.action;
+        if (flipperHalfActionReference != null)
+            flipperHalfAction = flipperHalfActionReference.action;
+
         // Salva i limiti angolari originali del joint
         fullLimit = new Vector2(joint.limits.min, joint.limits.max);
         halfLimit = fullLimit * 0.5f;
@@ -18,27 +24,26 @@ public class Flipper : MonoBehaviour
         // Configura la forza massima del motore
         motor.force = 100000f;
 
-        // Determina tipo di flipper e azioni input
-        switch (flipperType)
-        {
-            case FlipperType.Left:
-                flipperMotorSpeed *= -1f; // Inverte direzione per flipper sinistro
-                flipperAction = InputSystem.actions.FindAction("Flipper_L_Full", false);
-                flipperHalfAction = InputSystem.actions.FindAction("Flipper_L_Half", false);
-                break;
+        // Inverte la direzione per il flipper sinistro
+        if (flipperType == FlipperType.Left)
+            flipperMotorSpeed *= -1f;
 
-            case FlipperType.Right:
-                flipperAction = InputSystem.actions.FindAction("Flipper_R_Full", false);
-                flipperHalfAction = InputSystem.actions.FindAction("Flipper_R_Half", false);
-                break;
-        }
+        // Abilita le azioni
+        flipperAction?.Enable();
+        flipperHalfAction?.Enable();
+    }
+
+    private void OnDestroy()
+    {
+        // Disabilita le azioni quando il GameObject viene distrutto
+        flipperAction?.Disable();
+        flipperHalfAction?.Disable();
     }
 
     private void Update()
     {
         if (flipperLocked) return;
 
-        // Controllo half-press
         if (flipperHalfAction != null)
         {
             if (flipperHalfAction.WasPressedThisFrame())
@@ -53,7 +58,6 @@ public class Flipper : MonoBehaviour
             }
         }
 
-        // Controllo full-press
         if (flipperAction != null)
         {
             if (flipperAction.WasPressedThisFrame())
@@ -69,12 +73,9 @@ public class Flipper : MonoBehaviour
             }
         }
 
-        MotorControl(); // Applica motore se attivo
+        MotorControl();
     }
 
-    /// <summary>
-    /// Applica i nuovi limiti angolari al flipper.
-    /// </summary>
     private void SetJointLimit(Vector2 limit)
     {
         JointLimits limits = joint.limits;
@@ -83,9 +84,6 @@ public class Flipper : MonoBehaviour
         joint.limits = limits;
     }
 
-    /// <summary>
-    /// Attiva il motore del flipper con la velocità impostata.
-    /// </summary>
     private void ActivateMotor()
     {
         motor.targetVelocity = flipperMotorSpeed;
@@ -93,9 +91,6 @@ public class Flipper : MonoBehaviour
         joint.useMotor = true;
     }
 
-    /// <summary>
-    /// Inverte il motore (ritorno alla posizione di riposo).
-    /// </summary>
     private void DeactivateMotor()
     {
         motor.targetVelocity = -flipperMotorSpeed;
@@ -103,9 +98,6 @@ public class Flipper : MonoBehaviour
         joint.useMotor = true;
     }
 
-    /// <summary>
-    /// Blocca o sblocca il flipper.
-    /// </summary>
     public void SetLock(bool locked)
     {
         flipperLocked = locked;
@@ -113,9 +105,6 @@ public class Flipper : MonoBehaviour
             DeactivateMotor();
     }
 
-    /// <summary>
-    /// Gestisce quale direzione deve avere il motore in base allo stato attuale.
-    /// </summary>
     private void MotorControl()
     {
         if (motorActivated_full || motorActivated_half)
@@ -129,12 +118,16 @@ public class Flipper : MonoBehaviour
     [SerializeField] private float flipperMotorSpeed = 1000f;   // Velocità del motore
     [SerializeField] private EventReference flipSound;          // Suono quando viene attivato
 
-    private InputAction flipperAction;                          // Input completo (press)
-    private InputAction flipperHalfAction;                      // Input parziale (half-press)
+    [Header("Input Actions")]
+    [SerializeField] private InputActionReference flipperActionReference;      // Pressione completa
+    [SerializeField] private InputActionReference flipperHalfActionReference;  // Pressione parziale (half-press)
 
-    private Vector2 fullLimit;                                  // Limiti di angolo completi
-    private Vector2 halfLimit;                                  // Limiti a metà flipper
-    private JointMotor motor;                                   // Motor 3D
+    private InputAction flipperAction;                          
+    private InputAction flipperHalfAction;                      
+
+    private Vector2 fullLimit;                                  
+    private Vector2 halfLimit;                                  
+    private JointMotor motor;                                   
     private bool motorActivated_full = false;
     private bool motorActivated_half = false;
     private bool flipperLocked = false;

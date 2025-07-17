@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using UIButton = UnityEngine.UI.Button;
 
 /// <summary>
 /// Script collegato a un pulsante per acquistare potenziamenti.
@@ -16,7 +17,7 @@ public class BuffBuyButton : MonoBehaviour
         gameData = gameController.gameData;
 
         // Recupera il componente Button e collega la funzione BuyBuff all’evento onClick
-        button = GetComponent<Button>();
+        button = GetComponent<UIButton>();
         button.onClick.AddListener(new UnityAction(BuyBuff));
     }
 
@@ -53,6 +54,6 @@ public class BuffBuyButton : MonoBehaviour
     [SerializeField] private GameData.BuffType buffType; // Tipo di potenziamento da acquistare
     private GameController gameController; // Riferimento al controller principale
     private GameData gameData; // Contiene le logiche di calcolo per i prezzi
-    private Button button; // Componente UI
+    private UIButton button; // Componente UI corretto
     private int cost; // Costo calcolato per il potenziamento attuale
 }

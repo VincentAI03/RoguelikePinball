@@ -1,0 +1,66 @@
+{
+    "name": "GameControls",
+    "maps": [
+        {
+            "name": "actions",
+            "id": "c45ded19-4261-4f5f-a9df-8d171cb8233f",
+            "actions": [
+                {
+                    "name": "New action",
+                    "type": "Button",
+                    "id": "e4a19259-7c5b-4989-b44c-cac48884b607",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "StrikerCharge",
+                    "type": "Button",
+                    "id": "98b5db6e-a485-45aa-a3d8-ee5592f9f3bd",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "55d85565-a839-40c3-aeb4-534624d67e35",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "New action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "dacb3798-8e86-482b-a4b0-ac5b56694234",
+                    "path": "<Keyboard>/space",
+                    "interactions": "Hold",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "StrikerCharge",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "Keyboard",
+            "bindingGroup": "Keyboard",
+            "devices": [
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}

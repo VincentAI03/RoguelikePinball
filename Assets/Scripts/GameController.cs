@@ -113,8 +113,9 @@ public class GameController : MonoBehaviour
 
     private void Awake()
     {
-        // Recupera l’azione di input per caricare il kicker
-        strikerChargeAction = InputSystem.actions.FindAction("StrikerCharge", false);
+        // Recupera l’azione di input per caricare il Striker
+        strikerChargeAction = inputActions.FindAction("StrikerCharge", true);
+
     }
 
     private void Start()
@@ -461,6 +462,8 @@ public class GameController : MonoBehaviour
     [SerializeField] private EventReference strikerSound;
     [SerializeField] private EventReference gameStartSound;
     [SerializeField] private EventReference tenSecSound;
+    [SerializeField] private InputActionAsset inputActions;
+
 
     [Header("Game Parameters")]
     public GameData gameData;

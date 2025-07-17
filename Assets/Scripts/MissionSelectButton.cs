@@ -1,31 +1,40 @@
 using System;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
+using UIButton = UnityEngine.UI.Button;
 
 /// <summary>
 /// Pulsante che, se premuto, invia al GameController il tipo di missione scelto.
 /// </summary>
+[RequireComponent(typeof(UIButton))]
 public class MissionSelectButton : MonoBehaviour
 {
-    // Tipo di missione associato (set in Inspector)
     [SerializeField] private GameData.MissionType missionType;
 
     private GameController gameController;
-    private Button button;
+    private UIButton button;
 
     private void Awake()
     {
-        // Trova il controller e il componente Button
         gameController = FindObjectOfType<GameController>();
-        button = GetComponent<Button>();
-        // Aggiunge listener all’onClick
+        if (gameController == null)
+        {
+            Debug.LogError("MissionSelectButton: GameController non trovato.");
+            enabled = false;
+            return;
+        }
+
+        button = GetComponent<UIButton>();
+        if (button == null)
+        {
+            Debug.LogError("MissionSelectButton: Componente UIButton mancante.");
+            enabled = false;
+            return;
+        }
+
         button.onClick.AddListener(SelectMission);
     }
 
-    /// <summary>
-    /// Callback per il click: notifica il GameController della missione scelta.
-    /// </summary>
     private void SelectMission()
     {
         gameController.MissionSelect(missionType);

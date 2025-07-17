@@ -16,7 +16,7 @@ public class RenderTextureResolutionControl : MonoBehaviour
     // Immagine UI o quad con materiale CRT dove mostrare il buffer
     [SerializeField] private Image CRTImageRender;
     // La camera che renderizza nella RenderTexture
-    [SerializeField] private Camera camera;
+    [SerializeField] private Camera targetCamera;
 
     private void Start()
     {
@@ -52,13 +52,13 @@ public class RenderTextureResolutionControl : MonoBehaviour
         renderTexture.graphicsFormat = GraphicsFormat.R16G16B16A16_SFloat;
 
         // Imposta la RenderTexture come target della camera
-        camera.targetTexture = renderTexture;
+        targetCamera.targetTexture = renderTexture;
 
         // Passa la RT e lo scale al materiale CRT
         CRTImageRender.material.SetFloat("_CRTScale", Screen.width / 3f);
         CRTImageRender.material.SetTexture("_RenderTexture", renderTexture);
 
         // Aggiorna il rapporto d’aspetto della camera
-        camera.aspect = (float)Screen.width / Screen.height;
+        targetCamera.aspect = (float)Screen.width / Screen.height;
     }
 }

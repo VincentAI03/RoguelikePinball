@@ -44,10 +44,16 @@ public class TargetController : MonoBehaviour
     /// Sceglie un bersaglio a caso dalla lista, lo attiva e lo rimuove dalla lista.
     /// </summary>
     private void ActiveRandomTarget()
-    {
-        int idx = Random.Range(0, deactiveTargets.Count);
-        var t = deactiveTargets[idx];
+{
+    if (deactiveTargets == null || deactiveTargets.Count == 0)
+        return;
+
+    int idx = UnityEngine.Random.Range(0, deactiveTargets.Count); // Namespace esplicito
+    var t = deactiveTargets[idx];
+    if (t != null)
         t.Active();
-        deactiveTargets.RemoveAt(idx);
-    }
+
+    deactiveTargets.RemoveAt(idx);
+}
+
 }

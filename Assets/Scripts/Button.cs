@@ -21,7 +21,7 @@ public class Button : Bumper
     public virtual void Deactive()
     {
         OnDeactive.Invoke(); // Evento Unity (può notificare ButtonGroup)
-        collider.enabled = false;
+        buttonCollider.enabled = false;
         isActive = false;
         spriteRenderer.color = baseColor * 0.3f; // Colore più scuro per indicare disattivazione
         animator.SetTrigger("DeActivated");
@@ -33,7 +33,7 @@ public class Button : Bumper
     public virtual void Active()
     {
         OnActive.Invoke(); // Evento Unity (facoltativo)
-        collider.enabled = true;
+        buttonCollider.enabled = true;
         isActive = true;
         spriteRenderer.color = baseColor;
         animator.SetTrigger("ReActivated");
@@ -59,7 +59,7 @@ public class Button : Bumper
         }
     }
 
-    [SerializeField] private Collider collider;                // Collider 3D del pulsante
+    [SerializeField] private Collider buttonCollider;         // Collider 3D del pulsante
     [SerializeField] private SpriteRenderer spriteRenderer;    // Per cambiare colore
     [SerializeField] private Animator animator;                // Per animazioni
     public UnityEvent OnDeactive;                              // Evento invocato quando si disattiva
